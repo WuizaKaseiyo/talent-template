@@ -1,0 +1,299 @@
+# Vibe Coding Guide — Converting Agents to Talent Market Format
+
+> **For AI coders (Claude Code, Cursor, Copilot, etc.):**
+> This guide tells you exactly how to convert an existing AI agent project
+> into the Talent Market template format so it can be published on
+> [carbonkites.com](https://carbonkites.com).
+
+## Target Format
+
+Every talent is a directory with this structure:
+
+```
+my-talent/
+├── profile.yaml              # Required — identity & config
+├── skills/                   # Required — one folder per skill
+│   └── skill-name/
+│       └── SKILL.md          # Frontmatter + instructions
+├── tools/
+│   └── manifest.yaml         # Optional — tool declarations
+├── launch.sh                 # Optional — self-hosted startup
+├── heartbeat.sh              # Optional — health check
+└── manifest.json             # Optional — settings UI schema
+```
+
+---
+
+## Step-by-Step: Convert Any Agent
+
+### 1. Create `profile.yaml`
+
+This is the only required file. Fill in every field:
+
+```yaml
+id: my-agent                    # Unique ID (lowercase, hyphens ok)
+name: My Agent                  # Display name
+description: >
+  What this agent does, its strengths, and typical use cases.
+  Be specific — this is shown on the marketplace card.
+role: Engineer                  # Engineer | Designer | Manager | Researcher | Analyst | Assistant
+hosting: company                # company | self | remote
+auth_method: api_key            # api_key | cli | oauth
+api_provider: openrouter        # openrouter | anthropic | custom
+llm_model: ""                   # e.g. "claude-sonnet-4-20250514", empty = platform default
+temperature: 0.7
+hiring_fee: 0.0                 # USD, 0 = free
+salary_per_1m_tokens: 0.0
+agent_family: ""                # claude | openclaw | omctalent | "" (custom)
+skills:
+  - skill-name-1
+  - skill-name-2
+tools: []
+personality_tags:
+  - autonomous
+  - thorough
+system_prompt_template: >
+  You are [Agent Name], a [role] that specializes in [domain].
+  [Core instructions, constraints, and behavioral guidelines.]
+```
+
+### 2. Convert Skills to `skills/<name>/SKILL.md`
+
+Each skill is a **folder** with a `SKILL.md` file inside. The file must have YAML frontmatter:
+
+```markdown
+---
+name: Skill Display Name
+description: One-line summary — used to decide when to activate this skill.
+---
+
+# Skill Name
+
+Detailed instructions for the agent when this skill is active.
+
+## Guidelines
+- What to do
+- What not to do
+- Quality standards
+
+## Examples
+- Example input → expected output
+```
+
+### 3. Declare Tools in `tools/manifest.yaml` (Optional)
+
+```yaml
+tools:
+  - name: code_search
+    description: Search codebase for patterns and symbols
+    type: mcp
+    server: filesystem
+  - name: run_tests
+    description: Execute the project test suite
+    type: shell
+    command: npm test
+```
+
+---
+
+## Converting from Claude Code Agent
+
+A Claude Code agent typically has:
+- `CLAUDE.md` — project instructions and constraints
+- `.mcp.json` — MCP server configurations
+- No `profile.yaml`
+
+### Conversion steps:
+
+**1. Extract system prompt from `CLAUDE.md`**
+
+Read `CLAUDE.md` and copy its content into `profile.yaml` → `system_prompt_template`. This is the agent's core personality and behavior definition.
+
+```bash
+# Read the source
+cat /path/to/claude-agent/CLAUDE.md
+```
+
+**2. Extract skills from the codebase**
+
+Look for distinct capabilities described in `CLAUDE.md` or in any `skills/` directory. Each logical capability becomes a skill folder:
+
+```bash
+mkdir -p my-talent/skills/code-review
+# Write SKILL.md with the relevant instructions from CLAUDE.md
+```
+
+If `CLAUDE.md` has sections like "## Code Review", "## Debugging", "## Refactoring" — each becomes a separate skill.
+
+**3. Extract MCP tools from `.mcp.json`**
+
+```bash
+cat /path/to/claude-agent/.mcp.json
+```
+
+Each MCP server's tools should be listed in `tools/manifest.yaml`. Note any `env` variables — these become secrets the user must configure.
+
+**4. Set agent_family and auth_method**
+
+```yaml
+agent_family: claude
+auth_method: cli          # Claude Code uses CLI-based auth
+hosting: company           # or "self" if it runs independently
+```
+
+**5. Example: full conversion**
+
+Source `CLAUDE.md`:
+```markdown
+# Code Review Bot
+You are a thorough code reviewer. You check for bugs, style issues,
+security vulnerabilities, and performance problems.
+Always explain your reasoning and suggest fixes.
+```
+
+Result `profile.yaml`:
+```yaml
+id: code-review-bot
+name: Code Review Bot
+description: >
+  Thorough code reviewer that checks for bugs, style issues,
+  security vulnerabilities, and performance problems.
+role: Engineer
+hosting: company
+auth_method: cli
+api_provider: anthropic
+agent_family: claude
+skills:
+  - code-review
+  - security-audit
+personality_tags:
+  - thorough
+  - security-focused
+system_prompt_template: >
+  You are a thorough code reviewer. You check for bugs, style issues,
+  security vulnerabilities, and performance problems.
+  Always explain your reasoning and suggest fixes.
+```
+
+Result `skills/code-review/SKILL.md`:
+```markdown
+---
+name: Code Review
+description: Review code for bugs, style issues, and best practices violations.
+---
+
+# Code Review
+
+Review pull requests and code changes for correctness, style, performance,
+and security issues. Always explain the reasoning behind each finding.
+
+## Checklist
+- Logic errors and edge cases
+- Naming conventions and code style
+- Error handling completeness
+- Performance implications
+- Security vulnerabilities (injection, XSS, etc.)
+```
+
+---
+
+## Converting from OpenClaw Agent
+
+An OpenClaw agent typically has:
+- A graph-based workflow definition (YAML/JSON)
+- Channel configurations (WhatsApp, Telegram, Slack, etc.)
+- `launch.sh` or Docker setup for self-hosting
+
+### Conversion steps:
+
+**1. Map the workflow graph to skills**
+
+Each node/stage in the OpenClaw graph becomes a skill. For example, a "message-router" node becomes `skills/message-routing/SKILL.md`.
+
+**2. Set hosting and agent_family**
+
+```yaml
+agent_family: openclaw
+hosting: self              # OpenClaw agents are typically self-hosted
+auth_method: api_key
+```
+
+**3. Preserve launch.sh**
+
+Copy `launch.sh` directly — the platform uses it to start self-hosted agents.
+
+**4. Extract channel configs into skills**
+
+If the agent supports multiple channels, create a skill describing channel-specific behavior:
+
+```
+skills/
+├── multi-channel-comms/
+│   └── SKILL.md           # Channel list, routing rules, commands
+└── voice-interaction/
+    └── SKILL.md           # TTS, wake words, voice-specific behavior
+```
+
+---
+
+## Converting from a Generic Python/Node Agent
+
+For custom agents (LangChain, AutoGen, CrewAI, etc.):
+
+**1. Identify the system prompt**
+
+Look in the source code for:
+- `system_message`, `system_prompt`, or `instructions` variables
+- Agent class constructor arguments
+- Config files (`.env`, `config.yaml`, `agents.yaml`)
+
+Copy it to `system_prompt_template`.
+
+**2. Identify skills/capabilities**
+
+Look for:
+- Tool definitions → `tools/manifest.yaml`
+- Distinct task handlers → each becomes a skill folder
+- Agent roles in multi-agent setups → each role is a separate talent
+
+**3. Set hosting appropriately**
+
+| Your setup | `hosting` value |
+|-----------|----------------|
+| Runs on our platform (stateless, API-based) | `company` |
+| Runs on user's machine (`launch.sh`) | `self` |
+| Runs externally, connects via HTTP webhook | `remote` |
+
+---
+
+## Validation Checklist
+
+Before publishing, verify:
+
+- [ ] `profile.yaml` has `id`, `name`, `description`, `role`, `system_prompt_template`
+- [ ] Each skill in `profile.yaml` → `skills` has a matching `skills/<name>/SKILL.md`
+- [ ] Each `SKILL.md` has `---` frontmatter with `name` and `description`
+- [ ] `description` in profile is specific (not "An AI agent that helps with tasks")
+- [ ] `system_prompt_template` contains the full behavioral instructions
+- [ ] `hiring_fee` is set (0 for free)
+- [ ] If self-hosted: `launch.sh` exists and is executable
+- [ ] No secrets/API keys are hardcoded anywhere
+
+## Publishing
+
+```bash
+# Push to GitHub
+git init && git add -A && git commit -m "Initial talent"
+gh repo create my-talent --public --push
+
+# Register on Talent Market
+# Go to https://carbonkites.com → Add Talent → paste your repo URL
+```
+
+Or via API:
+```bash
+curl -X POST https://carbonkites.com/api/v1/repos \
+  -H "X-API-Key: tm_live_..." \
+  -H "Content-Type: application/json" \
+  -d '{"url": "https://github.com/you/my-talent"}'
+```
