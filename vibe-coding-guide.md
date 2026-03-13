@@ -11,8 +11,9 @@ Every talent is a directory with this layout:
 
 ```
 <talent-id>/
-├── profile.yaml              ← REQUIRED (agent metadata, including avatar emoji)
+├── profile.yaml              ← REQUIRED (agent metadata)
 ├── DESCRIPTION.md             ← REQUIRED (full agent description, displayed on detail page)
+├── avatar.png                 ← RECOMMENDED (talent avatar image, png/jpg/svg/webp)
 ├── skills/                    ← REQUIRED
 │   └── core.md               ←   skill definition template
 ├── tools/                     ← REQUIRED if agent has tools
@@ -76,7 +77,7 @@ Extract metadata from the source frontmatter and fill in this template exactly:
 ```yaml
 id: <talent-id>
 name: <from source frontmatter "name" field>
-avatar: <emoji — see Avatar Rules below>
+avatar: avatar.png
 description: >
   <from source frontmatter "description" field — keep original wording>
 role: <specific job role — see Role Guidelines below>
@@ -97,29 +98,23 @@ system_prompt_template: >
 agent_family: ""
 ```
 
-### Avatar Rules (REQUIRED)
+### Avatar Rules
 
-The `avatar` field is **mandatory**. It is the agent's visual identity shown on talent cards.
+The `avatar` field points to an **image file** in the talent directory. It is the agent's visual identity shown on talent cards and detail pages.
 
-1. If the source frontmatter has an `emoji` field → use that emoji
-2. If the source frontmatter has no `emoji` → pick a relevant emoji based on the agent's role:
+**Supported formats:** `.png`, `.jpg`, `.jpeg`, `.svg`, `.webp`
 
-| Role Domain | Suggested Emojis |
-|------------|-----------------|
-| Engineering | 🔧 💻 ⚙️ 🛠️ 🖥️ 🔌 🏗️ |
-| Design | 🎨 ✨ 🖌️ 🎭 👁️ |
-| Marketing | 📣 📈 🎯 📱 🌐 |
-| Sales | 💼 🤝 📊 💰 🏆 |
-| Product | 📋 🗺️ 🧭 💡 🔮 |
-| Project Mgmt | 📅 🗂️ 📌 🏭 |
-| Game Dev | 🎮 🕹️ 🎲 🏰 🎵 |
-| Testing/QA | 🧪 🔍 ✅ 🐛 📏 |
-| Security | 🔒 🛡️ 🔐 🕵️ |
-| Finance | 💰 📊 🧾 💳 |
-| Support | 🛟 📞 💬 🔧 |
-| Other | 🤖 🧠 ⚡ 🌟 🎯 |
+**How it works:**
+1. Place an image file named `avatar.png` (or `.jpg`/`.svg`/`.webp`) in the talent root directory
+2. Set `avatar: avatar.png` in `profile.yaml`
+3. The backend auto-detects the file and converts it to a base64 data URI for rendering
 
-Pick **one emoji** that best represents the agent. Do not use the same emoji for every agent — vary them.
+**If no avatar image is available:**
+- Omit the `avatar` field from `profile.yaml` (or set it to `""`)
+- The frontend will automatically display a role-based fallback emoji
+- This is perfectly acceptable — do NOT put emoji characters in the `avatar` field (it breaks the `<img>` tag)
+
+**Important:** The `avatar` field must be a **filename** (e.g., `avatar.png`), NOT an emoji character. Emojis in this field will cause broken images on the frontend.
 
 ### Required Fields (must ALL be present and correct)
 
@@ -127,7 +122,7 @@ Pick **one emoji** that best represents the agent. Do not use the same emoji for
 |-------|-------|------|
 | `id` | `<talent-id>` | From source filename, lowercase with hyphens |
 | `name` | `<display name>` | From source frontmatter `name`. If missing, derive from filename |
-| `avatar` | `<emoji>` | From source `emoji` field, or pick one per Avatar Rules above |
+| `avatar` | `avatar.png` | Filename of avatar image in talent directory. Omit if no image available |
 | `description` | `<text>` | From source frontmatter `description`. Keep original wording exactly |
 | `role` | `<job title>` | A specific job title from the Role Table below |
 | `hosting` | `self` | Always `self` — never `company` |
@@ -408,7 +403,7 @@ For custom agents (LangChain, AutoGen, CrewAI, etc.):
 | 1 | Modifying `DESCRIPTION.md` content (removing emojis, reformatting) | Copy source body **exactly as-is**, byte-for-byte |
 | 2 | Forgetting `DESCRIPTION.md` | This is the MOST IMPORTANT file. Create it FIRST |
 | 3 | Copying source body into `skills/core.md` instead of `DESCRIPTION.md` | Source body → `DESCRIPTION.md`. `skills/core.md` uses the default template |
-| 4 | Missing `avatar` field in `profile.yaml` | Always set — use source `emoji` or pick a relevant one |
+| 4 | Putting emoji in `avatar` field | `avatar` must be an image filename (e.g., `avatar.png`), NOT an emoji. Omit the field if no image is available |
 | 5 | Setting `hosting: company` | Must be `self` |
 | 6 | Setting `api_provider: openrouter` | Must be `anthropic` |
 | 7 | Using generic role like "Specialist" | Use the most specific role from the Role Table |
@@ -423,7 +418,7 @@ For custom agents (LangChain, AutoGen, CrewAI, etc.):
 Before publishing, verify:
 
 - [ ] `profile.yaml` has `id`, `name`, `avatar`, `description`, `role`, `system_prompt_template`
-- [ ] `avatar` is a single emoji (from source or picked per Avatar Rules)
+- [ ] `avatar` is an image filename (e.g., `avatar.png`) and the file exists, OR the field is omitted
 - [ ] `DESCRIPTION.md` exists with verbatim agent content
 - [ ] `skills/core.md` exists (template or custom)
 - [ ] Each skill in `profile.yaml` → `skills` has a matching file
@@ -497,7 +492,7 @@ Note: The emojis `🔍` and `🧠` are **preserved exactly** from the source.
 ```yaml
 id: marketing-seo-specialist
 name: SEO Specialist
-avatar: "🔍"
+avatar: avatar.png
 description: >
   Expert in technical SEO, content optimization, and search strategy
 role: SEO Specialist
