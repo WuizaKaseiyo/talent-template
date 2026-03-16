@@ -1,0 +1,20 @@
+name: tts-generator
+type: python
+command: python tts_generator.py
+parameters:
+  - name: text
+    type: string
+    description: Narration text to convert to speech
+    required: true
+  - name: output_path
+    type: string
+    description: File path to save the audio file
+    required: true
+  - name: voice_id
+    type: string
+    description: ElevenLabs voice ID
+    required: false
+  - name: language
+    type: string
+    description: Language code
+    required: false

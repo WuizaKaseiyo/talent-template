@@ -1,0 +1,6 @@
+# Tool manifest — declare tools this agent can use
+# Novel Writer has no custom tools — it produces structured JSON output only
+
+# builtin_tools:
+#   - Read
+#   - Write

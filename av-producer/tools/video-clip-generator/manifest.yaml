@@ -1,0 +1,20 @@
+name: video-clip-generator
+type: python
+command: python video_clip_generator.py
+parameters:
+  - name: image_path
+    type: string
+    description: Path to source image
+    required: true
+  - name: prompt
+    type: string
+    description: Motion/animation description
+    required: false
+  - name: duration
+    type: string
+    description: Duration in seconds (5 or 10)
+    required: false
+  - name: output_path
+    type: string
+    description: File path to save the video clip
+    required: true

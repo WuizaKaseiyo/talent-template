@@ -1,0 +1,24 @@
+name: video-composer
+type: python
+command: python video_composer.py
+parameters:
+  - name: image_paths
+    type: array
+    description: List of image file paths
+    required: false
+  - name: video_paths
+    type: array
+    description: List of video clip paths
+    required: false
+  - name: audio_paths
+    type: array
+    description: List of narration audio file paths
+    required: true
+  - name: bgm_path
+    type: string
+    description: Background music file path
+    required: false
+  - name: output_path
+    type: string
+    description: File path to save the final video
+    required: true

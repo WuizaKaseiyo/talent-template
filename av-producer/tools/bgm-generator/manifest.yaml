@@ -1,0 +1,16 @@
+name: bgm-generator
+type: python
+command: python bgm_generator.py
+parameters:
+  - name: prompt
+    type: string
+    description: Music description (mood, genre, tempo)
+    required: true
+  - name: duration_seconds
+    type: number
+    description: Target duration in seconds
+    required: false
+  - name: output_path
+    type: string
+    description: File path to save the music file
+    required: true

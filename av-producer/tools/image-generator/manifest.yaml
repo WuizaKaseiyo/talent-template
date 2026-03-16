@@ -1,0 +1,16 @@
+name: image-generator
+type: python
+command: python image_generator.py
+parameters:
+  - name: prompt
+    type: string
+    description: Scene description for image generation
+    required: true
+  - name: style_reference
+    type: string
+    description: Visual style description for consistency across chapters
+    required: false
+  - name: output_path
+    type: string
+    description: File path to save the generated image
+    required: true
