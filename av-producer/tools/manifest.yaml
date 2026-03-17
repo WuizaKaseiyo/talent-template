@@ -1,0 +1,7 @@
+# Tool manifest — custom tools for AV production pipeline
+custom_tools:
+  - image-generator
+  - tts-generator
+  - bgm-generator
+  - video-clip-generator
+  - video-composer
