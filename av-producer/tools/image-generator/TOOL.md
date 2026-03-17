@@ -7,14 +7,11 @@ description: Generate scene illustrations from text prompts using Google Gemini 
 
 Generates AI illustrations for visual novel scenes using Google Gemini Flash via OpenRouter.
 
-## Usage
-
-Provide a text prompt describing the scene. Optionally include a style_reference for visual consistency across chapters.
-
 ## Parameters
 
 - **prompt** (string, required) — Scene description for image generation
-- **style_reference** (string, optional) — Visual style description for consistency
+- **style** (string, optional) — Art style: cinematic, anime, comic, realistic
+- **aspect_ratio** (string, optional) — Output aspect ratio (default: 16:9)
 - **output_path** (string, required) — File path to save the generated image
 
 ## Cost

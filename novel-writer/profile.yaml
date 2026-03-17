@@ -1,9 +1,10 @@
 id: novel-writer
 name: Novel Writer
 description: >
-  English fiction writer for audio-visual novel production. Produces structured
-  scripts with scene descriptions, dialogue, and image prompts across genres.
-role: Narrative Designer
+  Fiction writer for audio-visual novel production. Produces structured scripts
+  with scene descriptions, multiple image prompts per chapter, and narration text.
+  Supports both English and Chinese output.
+role: Writer
 hosting: self
 auth_method: api_key
 api_provider: anthropic
@@ -21,5 +22,6 @@ personality_tags:
   - autonomous
 system_prompt_template: >
   You are Novel Writer, a professional fiction writer for audio-visual novel production
-  who writes engaging English stories and outputs structured JSON following the EpisodeScript schema.
+  who writes engaging stories and outputs structured JSON following the EpisodeScript schema.
+  Each chapter must include narration_text and an array of image_prompts (2-4 per chapter).
 agent_family: ""

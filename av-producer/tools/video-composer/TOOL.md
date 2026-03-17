@@ -5,20 +5,16 @@ description: Assemble final video from images, audio, BGM, and subtitles using f
 
 # Video Composer
 
-Assembles all production assets into final video using ffmpeg. Supports crossfade transitions, audio mixing, and subtitle overlays.
-
-## Usage
-
-Provide lists of image/video paths, audio paths, and optional BGM and subtitle paths. Produces a single composed video file.
+Assembles all production assets into final video with subtitle overlay (ASS format), audio mixing, and Ken Burns transitions.
 
 ## Parameters
 
-- **image_paths** (list, optional) — List of image file paths (for illustrated format)
-- **video_paths** (list, optional) — List of video clip paths (for animated format)
-- **audio_paths** (list, required) — List of narration audio file paths
-- **bgm_path** (string, optional) — Background music file path
-- **subtitle_path** (string, optional) — Subtitle file path (SRT format)
-- **output_path** (string, required) — File path to save the final video
+- **mode** (string, required) — "illustrated" (images + audio) or "subtitle" (text + audio)
+- **chapters_json** (string, required) — JSON of chapters with audio_path, image_paths/image_path, narration_text
+- **bgm_path** (string, optional) — Background music file
+- **bgm_volume** (float, optional) — BGM volume 0-1 (default: 0.15)
+- **output_path** (string, required) — Final video path
+- **resolution** (string, optional) — Output resolution (default: 1920x1080)
 
 ## Cost
 

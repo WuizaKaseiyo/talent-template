@@ -5,17 +5,13 @@ description: Generate background music tracks via Suno API.
 
 # BGM Generator
 
-Generates background music tracks for video production using Suno API via sunoapi.org.
-
-## Usage
-
-Provide a mood/genre description and optional duration. Returns a downloadable audio URL.
+Generates background music for video production using Suno API.
 
 ## Parameters
 
-- **prompt** (string, required) — Music description (mood, genre, tempo)
-- **duration_seconds** (number, optional) — Target duration in seconds
-- **output_path** (string, required) — File path to save the music file
+- **genre** (string, required) — Music genre/mood description
+- **duration_seconds** (number, required) — Target duration
+- **output_path** (string, required) — File path to save music
 
 ## Cost
 
